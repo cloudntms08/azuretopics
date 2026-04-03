@@ -1,67 +1,598 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Azure NTMS Topics</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background: #f5f7fa;
-            font-size: 1.15em;
-        }
-        header {
-            background: #0078D4;
-            padding: 20px;
-            text-align: center;
-            color: #fff;
-        }
-        .container {
-            width: 80%;
-            margin: 30px auto;
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
-        }
-        ol li {
-            padding: 8px 0;
-        }
-        footer {
-            text-align: center;
-            padding: 15px;
-            margin-top: 20px;
-            background: #eaeaea;
-            color: #333;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Azure DevOps + IaC with AI — NTMS Training Institute</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=Fraunces:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #e0f4ff;
+      --surface: #c8eaf9;
+      --card: #ffffff;
+      --border: #a0d4f0;
+      --accent: #0072c6;
+      --accent2: #005a9e;
+      --gold: #d48000;
+      --text: #0a1f3c;
+      --muted: #3a6a99;
+      --tag-bg: rgba(0,114,198,0.08);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: linear-gradient(160deg, #bde8ff 0%, #e0f4ff 40%, #cceeff 100%);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,114,198,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,114,198,0.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .glow-top {
+      position: fixed;
+      top: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 900px; height: 500px;
+      background: radial-gradient(ellipse, rgba(0,160,255,0.2) 0%, transparent 70%);
+      pointer-events: none; z-index: 0;
+    }
+
+    main { position: relative; z-index: 1; }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 80px 40px 60px;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 40px;
+      align-items: start;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(212,128,0,0.12);
+      border: 1px solid rgba(212,128,0,0.4);
+      color: var(--gold);
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 4px;
+      margin-bottom: 24px;
+      font-weight: 500;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      letter-spacing: -0.02em;
+      color: #04244d;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(135deg, #0072c6, #00a8e8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-desc {
+      font-family: 'Fraunces', serif;
+      font-size: 1.05rem;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--muted);
+      max-width: 600px;
+      margin-bottom: 18px;
+    }
+
+    .trainer-line {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(0,114,198,0.08);
+      border: 1px solid rgba(0,114,198,0.2);
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 0.8rem;
+      color: var(--accent2);
+      font-weight: 500;
+    }
+
+    .trainer-line .t-label {
+      font-size: 0.66rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    .trainer-line .t-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: #0058a3;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: flex-end;
+    }
+
+    .stat-box {
+      background: rgba(255,255,255,0.75);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 28px;
+      text-align: center;
+      min-width: 130px;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 4px 20px rgba(0,114,198,0.08);
+    }
+
+    .stat-box .num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .stat-box .label {
+      font-size: 0.68rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 4px;
+    }
+
+    /* ── PREREQ ── */
+    .prereq-strip {
+      background: rgba(255,255,255,0.5);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 28px 40px;
+      backdrop-filter: blur(4px);
+    }
+
+    .prereq-inner { max-width: 1100px; margin: 0 auto; }
+
+    .section-label {
+      font-size: 0.68rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+
+    .prereq-tags { display: flex; flex-wrap: wrap; gap: 10px; }
+
+    .tag {
+      background: var(--tag-bg);
+      border: 1px solid rgba(0,114,198,0.25);
+      color: var(--accent);
+      font-size: 0.78rem;
+      padding: 6px 14px;
+      border-radius: 6px;
+      letter-spacing: 0.03em;
+      transition: all 0.2s;
+    }
+
+    .tag:hover {
+      background: rgba(0,114,198,0.15);
+      border-color: var(--accent);
+    }
+
+    /* ── MODULES ── */
+    .modules-section {
+      padding: 70px 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-heading {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      color: var(--accent);
+      margin-bottom: 48px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .section-heading::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 24px;
+    }
+
+    .module-card {
+      background: rgba(255,255,255,0.82);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 24px rgba(0,100,180,0.07);
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .module-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(0,114,198,0.5);
+      box-shadow: 0 20px 50px rgba(0,114,198,0.15);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .module-card:nth-child(1) { animation-delay: 0.05s; }
+    .module-card:nth-child(2) { animation-delay: 0.10s; }
+    .module-card:nth-child(3) { animation-delay: 0.15s; }
+    .module-card:nth-child(4) { animation-delay: 0.20s; }
+    .module-card:nth-child(5) { animation-delay: 0.25s; }
+    .module-card:nth-child(6) { animation-delay: 0.30s; }
+    .module-card:nth-child(7) { animation-delay: 0.35s; }
+
+    .card-header {
+      padding: 22px 22px 18px;
+      border-bottom: 1px solid rgba(0,114,198,0.1);
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .card-icon {
+      width: 46px; height: 46px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .c1 { background: rgba(0,160,255,0.12); }
+    .c2 { background: rgba(0,114,198,0.12); }
+    .c3 { background: rgba(0,180,120,0.12); }
+    .c4 { background: rgba(212,128,0,0.12); }
+    .c5 { background: rgba(130,80,220,0.12); }
+    .c6 { background: rgba(220,60,60,0.12); }
+    .c7 { background: rgba(0,180,200,0.12); }
+
+    .module-num {
+      font-size: 0.63rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 4px;
+    }
+
+    .module-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.97rem;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+      color: #04244d;
+    }
+
+    .card-body { padding: 18px 22px 22px; }
+
+    .topic-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+
+    .topic-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      font-size: 0.79rem;
+      color: #3a6080;
+      line-height: 1.5;
+    }
+
+    .topic-list li::before {
+      content: '▸';
+      color: var(--accent);
+      opacity: 0.7;
+      flex-shrink: 0;
+      margin-top: 1px;
+      font-size: 0.68rem;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 36px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1100px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .footer-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #04244d;
+    }
+
+    .footer-logo span { color: var(--accent); }
+
+    .footer-copy {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-align: right;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 700px) {
+      .hero { grid-template-columns: 1fr; padding: 50px 24px 36px; }
+      .hero-meta { flex-direction: row; }
+      .prereq-strip { padding: 22px 24px; }
+      .modules-section { padding: 50px 24px; }
+      footer { flex-direction: column; text-align: center; padding: 28px 24px; }
+      .footer-copy { text-align: center; }
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <h1>Azure NTMS Topics</h1>
-    </header>
+<div class="glow-top"></div>
 
-    <div class="container">
-        <ol>
-            <li><strong>Azure Virtual Machines</strong> — Compute services for scalable workloads.</li>
-            <li><strong>Azure Blob Storage</strong> — Storage for unstructured data.</li>
-            <li><strong>Azure SQL Database</strong> — Fully managed relational database service.</li>
-            <li><strong>Azure Cognitive Services</strong> — AI services for vision, language & speech.</li>
-            <li><strong>Azure Functions</strong> — Serverless compute on events.</li>
-            <li><strong>Azure App Service</strong> — Managed platform for hosting web apps.</li>
-            <li><strong>Azure Kubernetes Service</strong> — Container orchestration using Kubernetes.</li>
-            <li><strong>Azure DevOps</strong> — Agile planning, CI/CD pipelines & repo management.</li>
-            <li><strong>Azure Monitor</strong> — Complete observability and monitoring service.</li>
-            <li><strong>Azure Identity</strong> — Complete observability and monitoring service.</li>
-        </ol>
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div>
+      <div class="hero-badge">NTMS Training Institute</div>
+      <h1>Azure DevOps +<br/><span>Infrastructure as Code</span><br/>with AI</h1>
+      <p class="hero-desc">
+        Automating cloud infrastructure, application delivery, and intelligent
+        operations using Azure DevOps, IaC tools, containers, Azure Kubernetes,
+        and cutting-edge AI services.
+      </p>
+      <div class="trainer-line">
+        <span class="t-label">Trainer</span>
+        <span>|</span>
+        <span class="t-name">👩‍💼 Ayushi Dubey</span>
+      </div>
     </div>
+    <div class="hero-meta">
+      <div class="stat-box">
+        <div class="num">7</div>
+        <div class="label">Modules</div>
+      </div>
+      <div class="stat-box">
+        <div class="num">AI</div>
+        <div class="label">Powered</div>
+      </div>
+      <div class="stat-box">
+        <div class="num">AZ</div>
+        <div class="label">Certified</div>
+      </div>
+    </div>
+  </section>
 
-    <footer>
-         NTMS Training Institute
-    </footer>
+  <!-- PREREQUISITES -->
+  <div class="prereq-strip">
+    <div class="prereq-inner">
+      <div class="section-label">// Prerequisites</div>
+      <div class="prereq-tags">
+        <span class="tag">Azure Infrastructure</span>
+        <span class="tag">Virtual Machines</span>
+        <span class="tag">Networking</span>
+        <span class="tag">Storage</span>
+        <span class="tag">Resource Groups</span>
+        <span class="tag">Cloud Concepts</span>
+      </div>
+    </div>
+  </div>
 
+  <!-- MODULES -->
+  <section class="modules-section">
+    <div class="section-heading">Course Modules</div>
+    <div class="modules-grid">
+
+      <div class="module-card">
+        <div class="card-header">
+          <div class="card-icon c1">🏗️</div>
+          <div>
+            <div class="module-num">Module 01</div>
+            <div class="module-title">Infrastructure as Code Fundamentals</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <ul class="topic-list">
+            <li>IaC concepts and benefits</li>
+            <li>Azure Resource Manager (ARM) templates</li>
+            <li>Template structure, parameters, and variables</li>
+            <li>Deploying and managing resources using ARM</li>
+            <li>Comparing ARM vs Bicep vs Terraform</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="module-card">
+        <div class="card-header">
+          <div class="card-icon c2">⚙️</div>
+          <div>
+            <div class="module-num">Module 02</div>
+            <div class="module-title">IaC Tools — Advanced</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <ul class="topic-list">
+            <li>Bicep language — Advanced</li>
+            <li>Bicep vs Terraform — Advanced</li>
+            <li>Terraform Advanced (covers TF-004 certification)</li>
+            <li>Managing Azure infrastructure with Terraform & Bicep</li>
+            <li>Modular design — Terraform & Azure Bicep</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="module-card">
+        <div class="card-header">
+          <div class="card-icon c3">🐳</div>
+          <div>
+            <div class="module-num">Module 03</div>
+            <div class="module-title">Containers & Image Management</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <ul class="topic-list">
+            <li>Docker fundamentals</li>
+            <li>Container images and Dockerfiles</li>
+            <li>Containerizing applications</li>
+            <li>Azure Container Registry (ACR)</li>
+            <li>Azure Container Instances (ACI)</li>
+            <li>Image security and versioning</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="module-card">
+        <div class="card-header">
+          <div class="card-icon c4">☸️</div>
+          <div>
+            <div class="module-num">Module 04</div>
+            <div class="module-title">Kubernetes in Azure</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <ul class="topic-list">
+            <li>Kubernetes fundamentals</li>
+            <li>Azure Kubernetes Service (AKS) architecture</li>
+            <li>Pods, services, deployments</li>
+            <li>Container networking and storage</li>
+            <li>CI/CD integration with AKS</li>
+            <li>Infrastructure automation for AKS</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="module-card">
+        <div class="card-header">
+          <div class="card-icon c5">🔄</div>
+          <div>
+            <div class="module-num">Module 05</div>
+            <div class="module-title">Source Control & CI/CD</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <ul class="topic-list">
+            <li>Git fundamentals — repos, branches, commits</li>
+            <li>GitHub repositories</li>
+            <li>GitHub Actions workflows</li>
+            <li>Azure Pipelines — CI/CD concepts</li>
+            <li>Build and release pipelines</li>
+            <li>Infrastructure and application pipelines</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="module-card">
+        <div class="card-header">
+          <div class="card-icon c6">🤖</div>
+          <div>
+            <div class="module-num">Module 06</div>
+            <div class="module-title">AI Fundamentals — AI-900</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <ul class="topic-list">
+            <li>AI concepts for Cloud & Automation</li>
+            <li>AI, ML, and Deep Learning fundamentals</li>
+            <li>Azure AI services overview</li>
+            <li>Cognitive Services — Vision, Language, Speech</li>
+            <li>AI use cases in cloud operations</li>
+            <li>Responsible AI principles</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="module-card">
+        <div class="card-header">
+          <div class="card-icon c7">🧠</div>
+          <div>
+            <div class="module-num">Module 07</div>
+            <div class="module-title">Applied AI with Azure — AI-102</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <ul class="topic-list">
+            <li>Azure AI services architecture</li>
+            <li>Azure OpenAI / Language services</li>
+            <li>Computer Vision and NLP services</li>
+            <li>AI model deployment concepts</li>
+            <li>Integrating AI APIs into applications</li>
+            <li>Monitoring and securing AI services</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">NTMS <span>Institute</span></div>
+    <div class="footer-copy">
+      Trainer: Ayushi Dubey &nbsp;|&nbsp; Azure DevOps + IaC with AI<br/>
+      © 2026 NTMS Training Institute. All rights reserved.
+    </div>
+  </footer>
+
+</main>
 </body>
 </html>
